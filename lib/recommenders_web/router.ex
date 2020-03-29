@@ -23,8 +23,8 @@ defmodule RecommendersWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: Recommenders.Schema
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: RecommendersWeb.Schema
 
-    forward "/", Absinthe.Plug, schema: Recommenders.Schema
+    forward "/", Absinthe.Plug, schema: RecommendersWeb.Schema
   end
 end

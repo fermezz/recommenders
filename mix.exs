@@ -43,8 +43,15 @@ defmodule Recommenders.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      # GraphQL Server
       {:absinthe, "~> 1.4.16"},
-      {:absinthe_plug, "~> 1.4"}
+      {:absinthe_plug, "~> 1.4"},
+      # Authentication
+      {:guardian, "~> 1.0"},
+      # Encryption
+      {:comeonin, "~> 4.0"},
+      # BCrypt implementation for Elixir
+      {:bcrypt_elixir, "~> 1.0"}
     ]
   end
 
