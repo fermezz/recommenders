@@ -20,7 +20,11 @@ defmodule RecommendersWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", RecommendersWeb do
-  #   pipe_through :api
-  # end
+  scope "/api" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: Recommenders.Schema
+
+    forward "/", Absinthe.Plug, schema: Recommenders.Schema
+  end
 end
