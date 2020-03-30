@@ -9,7 +9,11 @@ defmodule RecommendersWeb.Schema.ContentTypes do
 
   object :user do
     field :id, :id
-    field :name, :string
+    field :email, :string
     field :password_hash, :string
+  end
+
+  object :session do
+    field :token, :string
   end
 end

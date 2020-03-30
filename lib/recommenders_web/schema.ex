@@ -9,6 +9,14 @@ defmodule RecommendersWeb.Schema do
     field :recommendations, list_of(:recommendation) do
       resolve(&Resolvers.Content.list_recommendations/3)
     end
+
+    @desc "Login a user with email and password"
+    field :login, type: :session do
+      arg(:email, non_null(:string))
+      arg(:password, non_null(:string))
+
+      resolve(&Resolvers.Accounts.login/2)
+    end
   end
 
   mutation do

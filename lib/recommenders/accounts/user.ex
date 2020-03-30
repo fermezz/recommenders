@@ -8,6 +8,7 @@ defmodule Recommenders.Accounts.User do
     field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :token, :string
     timestamps()
   end
 
@@ -19,6 +20,11 @@ defmodule Recommenders.Accounts.User do
     |> validate_length(:password, min: 5, max: 20)
     |> unique_constraint(:email, downcase: true)
     |> put_password_hash()
+  end
+
+  def store_token_changeset(%Accounts.User{} = user, attrs) do
+    user
+    |> cast(attrs, [:token])
   end
 
   defp put_password_hash(changeset) do

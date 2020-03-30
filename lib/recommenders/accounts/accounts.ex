@@ -6,4 +6,10 @@ defmodule Recommenders.Accounts do
     |> Accounts.User.changeset(attrs)
     |> repository.insert()
   end
+
+  def store_token(%Accounts.User{} = user, token, repository \\ Repo) do
+    user
+    |> Accounts.User.store_token_changeset(%{token: token})
+    |> repository.update()
+  end
 end
