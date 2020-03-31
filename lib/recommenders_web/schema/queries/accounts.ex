@@ -11,5 +11,12 @@ defmodule RecommendersWeb.Schema.Queries.Accounts do
 
       resolve(&Resolvers.Accounts.login/2)
     end
+
+    @desc "Logout a user"
+    field :logout, type: :session do
+      arg(:token, non_null(:string))
+
+      resolve(&Resolvers.Accounts.logout/2)
+    end
   end
 end

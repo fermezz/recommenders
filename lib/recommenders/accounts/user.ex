@@ -27,6 +27,11 @@ defmodule Recommenders.Accounts.User do
     |> cast(attrs, [:token])
   end
 
+  def delete_token_changeset(%Accounts.User{} = user) do
+    user
+    |> Ecto.Changeset.change(token: "")
+  end
+
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->

@@ -8,6 +8,10 @@ defmodule RecommendersWeb.Schema.Resolvers.Accounts do
     end
   end
 
+  def logout(%{token: token}, _info) do
+    Recommenders.Accounts.delete_token(token)
+  end
+
   def create_user(args, _info) do
     Recommenders.Accounts.create_user(args)
   end
