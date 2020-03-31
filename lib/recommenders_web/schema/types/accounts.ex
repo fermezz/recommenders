@@ -1,11 +1,5 @@
-defmodule RecommendersWeb.Schema.ContentTypes do
+defmodule RecommendersWeb.Schema.Types.Accounts do
   use Absinthe.Schema.Notation
-
-  object :recommendation do
-    field :id, :id
-    field :title, :string
-    field :body, :string
-  end
 
   object :user do
     field :id, :id

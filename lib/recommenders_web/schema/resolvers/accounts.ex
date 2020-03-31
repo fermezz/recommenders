@@ -1,4 +1,4 @@
-defmodule RecommendersWeb.Resolvers.Accounts do
+defmodule RecommendersWeb.Schema.Resolvers.Accounts do
   def login(%{email: email, password: password}, _info) do
     with {:ok, user} =
            Recommenders.Accounts.AuthHelpers.login_with_email_and_password(email, password),

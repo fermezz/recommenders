@@ -1,31 +1,24 @@
 defmodule RecommendersWeb.Schema do
   use Absinthe.Schema
-  import_types(RecommendersWeb.Schema.ContentTypes)
 
-  alias RecommendersWeb.Resolvers
+  # Types
+  import_types(RecommendersWeb.Schema.Types.{Accounts, Content})
+
+  # Mutations
+  import_types(RecommendersWeb.Schema.Mutations.Accounts)
+
+  # Queries
+  import_types(RecommendersWeb.Schema.Queries.{Accounts, Content})
 
   query do
-    @desc "Get all recommendations"
-    field :recommendations, list_of(:recommendation) do
-      resolve(&Resolvers.Content.list_recommendations/3)
-    end
+    # Accounts
+    import_fields(:accounts_queries)
 
-    @desc "Login a user with email and password"
-    field :login, type: :session do
-      arg(:email, non_null(:string))
-      arg(:password, non_null(:string))
-
-      resolve(&Resolvers.Accounts.login/2)
-    end
+    # Content
+    import_fields(:recommendations_queries)
   end
 
   mutation do
-    @desc "Create a user"
-    field :create_user, type: :user do
-      arg(:email, non_null(:string))
-      arg(:password, non_null(:string))
-
-      resolve(&Resolvers.Accounts.create_user/2)
-    end
+    import_fields(:accounts_mutations)
   end
 end
