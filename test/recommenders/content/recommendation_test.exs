@@ -1,5 +1,5 @@
 defmodule Recommenders.Content.RecommendationTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "Recommenders.Content.list_recommendations/1 returns all recommendations" do
     defmodule FakeRepo do

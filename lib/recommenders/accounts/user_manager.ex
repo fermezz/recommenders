@@ -1,4 +1,4 @@
-defmodule Recommenders.Accounts do
+defmodule Recommenders.Accounts.UserManager do
   import Ecto.Query, only: [where: 2]
 
   alias Recommenders.{Repo, Accounts}
@@ -9,23 +9,23 @@ defmodule Recommenders.Accounts do
     |> repository.insert()
   end
 
-  def delete_token(token, repository \\ Repo) do
+  def update_user_token(%Accounts.User{} = user, token, repository \\ Repo) do
+    user
+    |> Accounts.User.changeset(%{token: token})
+    |> repository.update()
+  end
+
+  def remove_token_from_user(token, repository \\ Repo) do
     Accounts.User
     |> where(token: ^token)
-    |> Repo.one()
+    |> repository.one()
     |> case do
       nil ->
         {:error, "Invalid user"}
 
       user ->
-        Accounts.User.delete_token_changeset(user)
+        Accounts.User.changeset(user, %{token: nil})
         |> repository.update()
     end
-  end
-
-  def store_token(%Accounts.User{} = user, token, repository \\ Repo) do
-    user
-    |> Accounts.User.store_token_changeset(%{token: token})
-    |> repository.update()
   end
 end

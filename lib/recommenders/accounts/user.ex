@@ -13,7 +13,7 @@ defmodule Recommenders.Accounts.User do
   end
 
   @doc false
-  def changeset(%Accounts.User{} = user, attrs) do
+  def changeset(%Accounts.User{} = user, attrs) when user == %Accounts.User{} do
     user
     |> cast(attrs, [:email, :password])
     |> validate_required([:email, :password])
@@ -22,15 +22,7 @@ defmodule Recommenders.Accounts.User do
     |> put_password_hash()
   end
 
-  def store_token_changeset(%Accounts.User{} = user, attrs) do
-    user
-    |> cast(attrs, [:token])
-  end
-
-  def delete_token_changeset(%Accounts.User{} = user) do
-    user
-    |> Ecto.Changeset.change(token: "")
-  end
+  def changeset(%Accounts.User{} = user, attrs), do: user |> Ecto.Changeset.change(attrs)
 
   defp put_password_hash(changeset) do
     case changeset do
