@@ -11,6 +11,7 @@ defmodule RecommendersWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Recommenders.Context
   end
 
   scope "/", RecommendersWeb do
@@ -24,7 +25,6 @@ defmodule RecommendersWeb.Router do
     pipe_through :api
 
     forward "/graphiql", Absinthe.Plug.GraphiQL, schema: RecommendersWeb.Schema
-
-    forward "/", Absinthe.Plug, schema: RecommendersWeb.Schema
+    forward "/graphql", Absinthe.Plug, schema: RecommendersWeb.Schema
   end
 end
