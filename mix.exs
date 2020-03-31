@@ -10,7 +10,14 @@ defmodule Recommenders.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -51,7 +58,10 @@ defmodule Recommenders.MixProject do
       # Encryption
       {:comeonin, "~> 4.0"},
       # BCrypt implementation for Elixir
-      {:bcrypt_elixir, "~> 1.0"}
+      {:bcrypt_elixir, "~> 1.0"},
+
+      # Dev dependencies
+      {:excoveralls, "~> 0.10", only: :test}
     ]
   end
 
