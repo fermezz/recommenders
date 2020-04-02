@@ -33,7 +33,8 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
 
       response = get(conn, "/api/graphql", query_skeleton(query, "recommendations"))
 
-      assert [%{"title" => "hola"}] == json_response(response, 200)["data"]["recommendations"]
+      assert nil == json_response(response, 200)["data"]["recommendations"]
+      assert "Not authorized" == List.first(json_response(response, 200)["errors"])["message"]
     end
   end
 end

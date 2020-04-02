@@ -23,10 +23,11 @@ defmodule Recommenders.Context do
   end
 
   defp authorize(token) do
-    Recommenders.Guardian.decode_and_verify(token)
-    |> case do
-      {:error, what} -> IO.inspect(what)
-      {:ok, user} -> IO.inspect(user)
+    with {:ok, claims} <- Recommenders.Guardian.decode_and_verify(token) do
+      case Recommenders.Guardian.resource_from_claims(claims) do
+        {:ok, user} -> {:ok, user}
+        error -> error
+      end
     end
   end
 end
