@@ -1,10 +1,15 @@
 defmodule RecommendersWeb.Schema.Resolvers.Accounts do
+  alias Recommenders.Accounts.UserManager
+
   def login(%{email: email, password: password}, _info) do
-    with {:ok, user} =
-           Recommenders.Accounts.AuthHelpers.login_with_email_and_password(email, password),
-         {:ok, jwt, _} <- Recommenders.Guardian.encode_and_sign(user),
-         {:ok, _} <- Recommenders.Accounts.UserManager.update_user_token(user, jwt) do
+    with(
+      {:ok, user} <- UserManager.authenticate_user(email, password),
+      {:ok, jwt, _} <- Recommenders.Guardian.encode_and_sign(user),
+      {:ok, _} <- UserManager.update_user(user, %{token: jwt})
+    ) do
       {:ok, %{token: jwt}}
+    else
+      error -> error
     end
   end
 

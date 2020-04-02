@@ -2,10 +2,6 @@ defmodule Recommenders.Context do
   @behaviour Plug
 
   import Plug.Conn
-  import Ecto.Query, only: [where: 2]
-
-  alias Recommenders.Repo
-  alias Recommenders.Accounts.User
 
   def init(opts), do: opts
 
@@ -27,12 +23,10 @@ defmodule Recommenders.Context do
   end
 
   defp authorize(token) do
-    User
-    |> where(token: ^token)
-    |> Repo.one()
+    Recommenders.Guardian.decode_and_verify(token)
     |> case do
-      nil -> {:error, "Invalid authorization token"}
-      user -> {:ok, user}
+      {:error, what} -> IO.inspect(what)
+      {:ok, user} -> IO.inspect(user)
     end
   end
 end

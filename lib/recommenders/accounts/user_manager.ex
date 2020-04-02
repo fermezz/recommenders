@@ -1,7 +1,12 @@
 defmodule Recommenders.Accounts.UserManager do
+  import Comeonin.Bcrypt, only: [checkpw: 2]
   import Ecto.Query, only: [where: 2]
 
   alias Recommenders.{Repo, Accounts}
+
+  def get_user!(user_id, repository \\ Repo) do
+    repository.get!(Accounts.User, user_id)
+  end
 
   def create_user(attrs \\ %{}, repository \\ Repo) do
     %Accounts.User{}
@@ -9,9 +14,9 @@ defmodule Recommenders.Accounts.UserManager do
     |> repository.insert()
   end
 
-  def update_user_token(%Accounts.User{} = user, token, repository \\ Repo) do
+  def update_user(%Accounts.User{} = user, changes, repository \\ Repo) do
     user
-    |> Accounts.User.changeset(%{token: token})
+    |> Accounts.User.changeset(changes)
     |> repository.update()
   end
 
@@ -26,6 +31,21 @@ defmodule Recommenders.Accounts.UserManager do
       user ->
         Accounts.User.changeset(user, %{token: nil})
         |> repository.update()
+    end
+  end
+
+  def authenticate_user(email, password, repository \\ Repo) do
+    user = repository.get_by(Accounts.User, email: String.downcase(email))
+
+    cond do
+      user && checkpw(password, user.password_hash) ->
+        {:ok, user}
+
+      user ->
+        {:error, "Incorrect login credentials"}
+
+      true ->
+        {:error, "User not found"}
     end
   end
 end
