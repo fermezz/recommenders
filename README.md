@@ -1,4 +1,4 @@
-![Build Status](https://github.com/fermezz/recommenders/workflows/Build/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/fermezz/recommenders/badge.svg)](https://coveralls.io/github/fermezz/recommenders)
+![Build Status](https://github.com/fermezz/recommenders/workflows/Build/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/fermezz/recommenders/badge.svg?branch=master)](https://coveralls.io/github/fermezz/recommenders?branch=master)
 # Recommenders
 
 To start your Phoenix server:
