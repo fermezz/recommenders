@@ -22,6 +22,13 @@ defmodule RecommendersWeb.Schema.Resolvers.Accounts do
   end
 
   def signup(args, _info) do
-    Recommenders.Accounts.UserManager.create_user(args)
+    case Recommenders.Accounts.UserManager.create_user(args) do
+      {:error, %{errors: errors}} -> {:error, errors |> Enum.map(&handle_signup_error(&1))}
+      success -> success
+    end
+  end
+
+  defp handle_signup_error({key, {message, _}}) do
+    "There was an error with the #{key} field: #{message}"
   end
 end
