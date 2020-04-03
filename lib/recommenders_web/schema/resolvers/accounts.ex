@@ -1,6 +1,10 @@
 defmodule RecommendersWeb.Schema.Resolvers.Accounts do
   alias Recommenders.Accounts.UserManager
 
+  def find_user(_parent, %{id: user_id}, _info) do
+    {:ok, UserManager.get_user!(user_id)}
+  end
+
   def login(%{email: email, password: password}, _info) do
     with(
       {:ok, user} <- UserManager.authenticate_user(email, password),
