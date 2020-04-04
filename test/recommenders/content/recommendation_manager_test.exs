@@ -24,7 +24,26 @@ defmodule Recommenders.Content.RecommendationManagerTest do
       Recommenders.Content.RecommendationManager.list_recommendations_for_user(1, FakeRepoForUser)
 
     assert Ecto.Adapters.SQL.to_sql(:all, Recommenders.Repo, result) ==
-             {"SELECT r0.\"id\", r0.\"title\", r0.\"body\", r0.\"to\", r0.\"inserted_at\", r0.\"updated_at\" FROM \"recommendations\" AS r0 WHERE (r0.\"to\" = $1)",
+             {"SELECT r0.\"id\", r0.\"title\", r0.\"body\", r0.\"to\", r0.\"from\", r0.\"inserted_at\", r0.\"updated_at\" FROM \"recommendations\" AS r0 WHERE (r0.\"to\" = $1)",
               [1]}
+  end
+
+  test "Recommenders.Content.RecommendationManager.recommends/3 creates a recommendation for a given user" do
+    defmodule FakeRepoRecommendationForUser do
+      def insert(changeset) do
+        {:ok, changeset}
+      end
+    end
+
+    recommendation = %{title: "My cool recommendation", to: 2}
+
+    {:ok, changeset} =
+      Recommenders.Content.RecommendationManager.recommends(
+        %Recommenders.Accounts.User{id: 1},
+        recommendation,
+        FakeRepoRecommendationForUser
+      )
+
+    assert Map.put(recommendation, :from, 1) == changeset.changes
   end
 end

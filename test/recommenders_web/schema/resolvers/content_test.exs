@@ -44,7 +44,7 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
     test "Retrieve recommendations' titles for user", %{conn: conn} do
       {:ok, user} = Recommenders.Accounts.UserManager.signup(@user)
 
-      recommendation = %{title: "My title", body: "A body", to: user.id}
+      recommendation = %{title: "My title", body: "A body", to: user.id, from: user.id}
 
       %Recommenders.Content.Recommendation{}
       |> Recommenders.Content.Recommendation.changeset(recommendation)
@@ -69,6 +69,40 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
 
       assert [%{"title" => "My title"}] ==
                json_response(response, 200)["data"]["user"]["has_been_recommended"]
+    end
+
+    test "Create recommendations from user to user", %{conn: conn} do
+      {:ok, from_user} = Recommenders.Accounts.UserManager.signup(@user)
+
+      {:ok, to_user} =
+        Recommenders.Accounts.UserManager.create_user(%{
+          email: "other@user.com",
+          password: "password"
+        })
+
+      query = """
+      mutation {
+        recommendation(title: "My Recommendation Title", to: "#{to_user.id}") {
+          title
+          to
+          from
+        }
+      }
+      """
+
+      context = %{context: %{current_user: from_user, token: from_user.token}}
+
+      response =
+        conn
+        |> put_private(:absinthe, context)
+        |> post("/api/graphql", mutation_skeleton(query))
+
+      assert %{
+               "title" => "My Recommendation Title",
+               "to" => "#{to_user.id}",
+               "from" => "#{from_user.id}"
+             } ==
+               json_response(response, 200)["data"]["recommendation"]
     end
   end
 end

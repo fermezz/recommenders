@@ -3,7 +3,7 @@ defmodule RecommendersWeb.Schema.Queries.Content do
 
   alias RecommendersWeb.Schema.Resolvers
 
-  object :recommendations_queries do
+  object :content_queries do
     @desc "Get all recommendations"
     field :recommendations, list_of(:recommendation) do
       resolve(&Resolvers.Content.list_recommendations/3)
