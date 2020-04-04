@@ -13,10 +13,22 @@ defmodule Recommenders.Accounts.UserManagerTest do
     assert 1 == user_id
   end
 
-  test "Recommenders.Accounts.UserManager.create_user/2" do
+  test "Recommenders.Accounts.UserManager.signup/2 works great for correct user and email" do
     defmodule FakeRepoCreateUser do
       def insert(changeset) do
-        changeset
+        {:ok, changeset}
+      end
+
+      def get_by(_schema, email) do
+        %Recommenders.Accounts.User{
+          id: 1,
+          email: email,
+          password_hash: Comeonin.Bcrypt.hashpwsalt("password")
+        }
+      end
+
+      def update(changeset) do
+        {:ok, changeset}
       end
     end
 
@@ -25,11 +37,34 @@ defmodule Recommenders.Accounts.UserManagerTest do
       :password => "password"
     }
 
-    changeset = Recommenders.Accounts.UserManager.create_user(attrs, FakeRepoCreateUser)
+    {:ok, changeset} = Recommenders.Accounts.UserManager.signup(attrs, FakeRepoCreateUser)
+
+    assert %{token: _} = changeset.changes
+  end
+
+  test "Recommenders.Accounts.UserManager.signup/2 returns error for short password" do
+    defmodule FakeRepoCreateIncorrectUser do
+      def insert(changeset) do
+        {:error, changeset}
+      end
+
+      def get_by(_schema, email) do
+        %{id: 1, email: email, password_hash: Comeonin.Bcrypt.hashpwsalt("password")}
+      end
+    end
+
+    attrs = %{
+      :email => "user@test.com",
+      :password => "pass"
+    }
+
+    {:error, errors} =
+      Recommenders.Accounts.UserManager.signup(attrs, FakeRepoCreateIncorrectUser)
 
     # The changeset is arriving correctly to the Repo.
-    assert Map.get(attrs, :email) == Map.get(changeset.changes, :email)
-    assert Map.get(attrs, :password) == Map.get(changeset.changes, :password)
+    assert [
+             "There was an error with the \"password\" field: should be at least %{count} character(s)"
+           ] == errors
   end
 
   test "Recommenders.Accounts.UserManager.remove_token_from_user/3 sets token correctly to be an empty string" do
@@ -83,14 +118,20 @@ defmodule Recommenders.Accounts.UserManagerTest do
         password_hash = Comeonin.Bcrypt.hashpwsalt("pepehongo")
         %Recommenders.Accounts.User{email: email[:email], password_hash: password_hash}
       end
+
+      def update(changeset) do
+        {:ok, changeset}
+      end
     end
 
-    assert {:ok, %Recommenders.Accounts.User{email: "user@test.com", password_hash: "" <> _}} =
+    assert {:ok, changeset} =
              Recommenders.Accounts.UserManager.authenticate_user(
                "user@test.com",
                "pepehongo",
                FakeRepoAuthenticateUser
              )
+
+    assert %{token: _} = changeset.changes
   end
 
   test "Recommenders.Accounts.UserManager.authenticate_user/3 error with incorrect credentials" do

@@ -19,6 +19,8 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
     }
   end
 
+  @user %{email: "test@user.com", password: "password"}
+
   describe "Content Resolvers" do
     test "Retrieve recommendations' titles", %{conn: conn} do
       %Recommenders.Content.Recommendation{}
@@ -40,23 +42,12 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
     end
 
     test "Retrieve recommendations' titles for user", %{conn: conn} do
-      {:ok, user} =
-        %Recommenders.Accounts.User{}
-        |> Recommenders.Accounts.User.changeset(%{
-          email: "test@user.com",
-          password: "password",
-          token: nil
-        })
-        |> Recommenders.Repo.insert()
+      {:ok, user} = Recommenders.Accounts.UserManager.signup(@user)
 
-      {:ok, jwt} = RecommendersWeb.Schema.Resolvers.Accounts.login(user, %{})
+      recommendation = %{title: "My title", body: "A body", to: user.id}
 
       %Recommenders.Content.Recommendation{}
-      |> Recommenders.Content.Recommendation.changeset(%{
-        title: "My title",
-        body: "A body",
-        to: user.id
-      })
+      |> Recommenders.Content.Recommendation.changeset(recommendation)
       |> Recommenders.Repo.insert()
 
       query = """
@@ -69,14 +60,12 @@ defmodule RecommendersWeb.Schema.Resolvers.ContentTest do
       }
       """
 
-      context = %{context: %{current_user: user, token: jwt}}
+      context = %{context: %{current_user: user, token: user.token}}
 
       response =
-        get(
-          conn |> put_private(:absinthe, context),
-          "/api/graphql",
-          query_skeleton(query, "recommendations")
-        )
+        conn
+        |> put_private(:absinthe, context)
+        |> get("/api/graphql", query_skeleton(query, "recommendations"))
 
       assert [%{"title" => "My title"}] ==
                json_response(response, 200)["data"]["user"]["has_been_recommended"]

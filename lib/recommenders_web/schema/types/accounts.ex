@@ -11,6 +11,7 @@ defmodule RecommendersWeb.Schema.Types.Accounts do
     field :id, :id
     field :email, :string
     field :password_hash, :string
+    field :token, :string
 
     # Recommendations
     field :has_been_recommended, list_of(:recommendation) do

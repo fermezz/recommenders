@@ -6,13 +6,8 @@ defmodule RecommendersWeb.Schema.Resolvers.Accounts do
   end
 
   def login(%{email: email, password: password}, _info) do
-    with(
-      {:ok, user} <- UserManager.authenticate_user(email, password),
-      {:ok, jwt, _} <- Recommenders.Guardian.encode_and_sign(user),
-      {:ok, _} <- UserManager.update_user(user, %{token: jwt})
-    ) do
-      {:ok, %{token: jwt}}
-    else
+    case UserManager.authenticate_user(email, password) do
+      {:ok, user} -> {:ok, user}
       error -> error
     end
   end
@@ -22,13 +17,6 @@ defmodule RecommendersWeb.Schema.Resolvers.Accounts do
   end
 
   def signup(args, _info) do
-    case Recommenders.Accounts.UserManager.create_user(args) do
-      {:error, %{errors: errors}} -> {:error, errors |> Enum.map(&handle_signup_error(&1))}
-      success -> success
-    end
-  end
-
-  defp handle_signup_error({key, {message, _}}) do
-    "There was an error with the #{key} field: #{message}"
+    Recommenders.Accounts.UserManager.signup(args)
   end
 end

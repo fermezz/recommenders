@@ -11,7 +11,7 @@ defmodule Recommenders.GuardianTest do
 
     test "Recommenders.Guardian.resource_from_claims/1 return the user stored in claims" do
       assert {:ok, %Recommenders.Accounts.User{} = user} =
-               Recommenders.Accounts.UserManager.create_user(%{
+               Recommenders.Accounts.UserManager.signup(%{
                  email: "user@test.com",
                  password: "pepehongo"
                })

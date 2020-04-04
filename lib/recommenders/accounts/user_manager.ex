@@ -8,7 +8,19 @@ defmodule Recommenders.Accounts.UserManager do
     repository.get!(Accounts.User, user_id)
   end
 
-  def create_user(attrs \\ %{}, repository \\ Repo) do
+  def signup(%{email: email, password: password} = attrs, repository \\ Repo) do
+    create_user(attrs, repository)
+    |> case do
+      {:ok, _user} -> authenticate_user(email, password, repository)
+      {:error, %{errors: errors}} -> {:error, errors |> Enum.map(&handle_errors(&1))}
+    end
+  end
+
+  defp handle_errors({key, {message, _}}) do
+    "There was an error with the \"#{key}\" field: #{message}"
+  end
+
+  defp create_user(attrs, repository) do
     %Accounts.User{}
     |> Accounts.User.changeset(attrs)
     |> repository.insert()
@@ -39,7 +51,9 @@ defmodule Recommenders.Accounts.UserManager do
 
     cond do
       user && checkpw(password, user.password_hash) ->
-        {:ok, user}
+        with {:ok, jwt, _} <- Recommenders.Guardian.encode_and_sign(user) do
+          update_user(user, %{token: jwt}, repository)
+        end
 
       user ->
         {:error, "Incorrect login credentials"}
