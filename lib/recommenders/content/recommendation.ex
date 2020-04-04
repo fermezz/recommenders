@@ -8,13 +8,16 @@ defmodule Recommenders.Content.Recommendation do
     field :title, :string
     field :body, :string
     field :to, :integer
+    field :from, :integer
     timestamps()
   end
 
   @doc false
   def changeset(%Content.Recommendation{} = recommendation, attrs) do
     recommendation
-    |> cast(attrs, [:title, :body, :to])
-    |> validate_required([:title, :body, :to])
+    |> cast(attrs, [:title, :body, :to, :from])
+    |> foreign_key_constraint(:from)
+    |> foreign_key_constraint(:to)
+    |> validate_required([:title, :to, :from])
   end
 end

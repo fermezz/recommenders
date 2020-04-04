@@ -20,7 +20,7 @@ defmodule Recommenders.Accounts.UserManager do
     "There was an error with the \"#{key}\" field: #{message}"
   end
 
-  defp create_user(attrs, repository) do
+  def create_user(attrs, repository \\ Repo) do
     %Accounts.User{}
     |> Accounts.User.changeset(attrs)
     |> repository.insert()
