@@ -59,6 +59,8 @@ defmodule Recommenders.MixProject do
       {:comeonin, "~> 4.0"},
       # BCrypt implementation for Elixir
       {:bcrypt_elixir, "~> 1.0"},
+      # CORS
+      {:cors_plug, "~> 2.0.2"},
 
       # Dev dependencies
       {:excoveralls, "~> 0.10", only: :test}
